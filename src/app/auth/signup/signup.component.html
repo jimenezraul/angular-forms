@@ -21,7 +21,7 @@
       <input id="confirm-password" type="password" name="confirmPassword" formControlName="confirmPassword" />
     </div>
   </div>
-  @if (isControlInvalid('passwords', 'password')) {
+  @if (isControlInvalid('passwords', 'password') || isControlInvalid('confirmPassword', 'passwords')) {
   <div class="control-error">Password must be at least 6 characters</div>
   }
   @if (confirmPasswordIsValid) {

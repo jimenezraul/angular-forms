@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-function passwordMatchValidator(control: AbstractControl) {
-  const password = control.get('password')?.value;
-  const confirmPassword = control.get('confirmPassword')?.value;
-  return password === confirmPassword ? null : { mismatch: true };
-}
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { passwordMatchValidator } from './passwordMatchValidator';
 
 @Component({
   selector: 'app-signup',
@@ -62,7 +57,13 @@ export class SignupComponent {
   }
 
   get confirmPasswordIsValid() {
+    const confirmPasswordControl = this.passwordsGroup.get('confirmPassword');
     const mismatch = this.passwordsGroup.errors?.['mismatch'];
-    return mismatch && this.passwordsGroup.touched;
+
+    return (
+      confirmPasswordControl?.touched &&
+      confirmPasswordControl?.dirty &&
+      (confirmPasswordControl?.invalid || mismatch)
+    );
   }
 }
