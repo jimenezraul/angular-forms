@@ -6,6 +6,9 @@
     <label for="email">Email</label>
     <input id="email" type="email" name="email" formControlName="email" />
   </div>
+  @if (isControlInvalid('email')) {
+  <div class="control-error">Please enter a valid email</div>
+  }
 
   <div class="control-row" formGroupName="passwords">
     <div class="control">
@@ -18,6 +21,9 @@
       <input id="confirm-password" type="password" name="confirmPassword" formControlName="confirmPassword" />
     </div>
   </div>
+  @if (isControlInvalid('passwords', 'password')) {
+  <div class="control-error">Password must be at least 6 characters</div>
+  }
   @if (confirmPasswordIsValid) {
   <div class="control-error">Password dosen't match</div>
   }
@@ -36,6 +42,12 @@
         <input type="text" id="last-name" name="last-name" formControlName="lastName" />
       </div>
     </div>
+    @if (isControlInvalid('firstName')) {
+    <div class="control-error">Please enter your first name</div>
+    }
+    @if (isControlInvalid('lastName')) {
+    <div class="control-error">Please enter your last name</div>
+    }
 
     <fieldset formGroupName="address">
       <legend>Your Address</legend>
@@ -70,7 +82,7 @@
   <div class="control-row">
     <div class="control">
       <label for="role">What best describes your role?</label>
-      <select id="role" name="role">
+      <select id="role" name="role" formControlName="role">
         <option value="student">Student</option>
         <option value="teacher">Teacher</option>
         <option value="employee">Employee</option>
@@ -80,20 +92,20 @@
     </div>
   </div>
 
-  <fieldset>
+  <fieldset formArrayName="source">
     <legend>How did you find us?</legend>
     <div class="control">
-      <input type="checkbox" id="google" name="acquisition" value="google" />
+      <input type="checkbox" id="google" name="acquisition" value="google" formControlName="0" />
       <label for="google">Google</label>
     </div>
 
     <div class="control">
-      <input type="checkbox" id="friend" name="acquisition" value="friend" />
+      <input type="checkbox" id="friend" name="acquisition" value="friend" formControlName="1" />
       <label for="friend">Referred by friend</label>
     </div>
 
     <div class="control">
-      <input type="checkbox" id="other" name="acquisition" value="other" />
+      <input type="checkbox" id="other" name="acquisition" value="other" formControlName="2" />
       <label for="other">Other</label>
     </div>
   </fieldset>
@@ -101,7 +113,7 @@
   <div class="control-row">
     <div class="control">
       <label for="terms-and-conditions">
-        <input type="checkbox" id="terms-and-conditions" name="terms" />
+        <input type="checkbox" id="terms-and-conditions" name="terms" formControlName="terms" />
         I agree to the terms and conditions
       </label>
     </div>

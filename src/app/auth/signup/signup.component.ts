@@ -1,16 +1,10 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { last } from 'rxjs';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
-
-  if (password !== confirmPassword) {
-    return { mismatch: true };
-  }
-
-  return null;
+  return password === confirmPassword ? null : { mismatch: true };
 }
 
 @Component({
@@ -22,51 +16,25 @@ function passwordMatchValidator(control: AbstractControl) {
 })
 export class SignupComponent {
   form = new FormGroup({
-    email: new FormControl('', {
-      validators: [Validators.required, Validators.email],
-    }),
+    email: new FormControl('', [Validators.required, Validators.email]),
     passwords: new FormGroup(
       {
-        password: new FormControl('', {
-          validators: [Validators.required, Validators.minLength(6)],
-        }),
-        confirmPassword: new FormControl('', {
-          validators: [Validators.required, Validators.minLength(6)],
-        }),
+        password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+        confirmPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
       },
-      { validators: [passwordMatchValidator] }
+      { validators: passwordMatchValidator }
     ),
-    firstName: new FormControl('', {
-      validators: [Validators.required],
-    }),
-    lastName: new FormControl('', {
-      validators: [Validators.required],
-    }),
+    firstName: new FormControl('', [Validators.required]),
+    lastName: new FormControl('', [Validators.required]),
     address: new FormGroup({
-      street: new FormControl('', {
-        validators: [Validators.required],
-      }),
-      city: new FormControl('', {
-        validators: [Validators.required],
-      }),
-      state: new FormControl('', {
-        validators: [Validators.required],
-      }),
-      zip: new FormControl('', {
-        validators: [Validators.required],
-      }),
+      street: new FormControl('', [Validators.required]),
+      city: new FormControl('', [Validators.required]),
+      state: new FormControl('', [Validators.required]),
+      zip: new FormControl('', [Validators.required]),
     }),
-    role: new FormControl<'student' | 'teacher' | 'employee' | 'founder' | 'other'>('student', {
-      validators: [Validators.required],
-    }),
-    source: new FormArray([
-      new FormControl(false),
-      new FormControl(false),
-      new FormControl(false),
-    ]),
-    agree: new FormControl(false, {
-      validators: [Validators.requiredTrue],
-    }),
+    role: new FormControl<'student' | 'teacher' | 'employee' | 'founder' | 'other'>('student', [Validators.required]),
+    source: new FormArray([new FormControl(false), new FormControl(false), new FormControl(false)]),
+    terms: new FormControl(false, [Validators.requiredTrue]),
   });
 
   onSubmit() {
@@ -81,20 +49,12 @@ export class SignupComponent {
     this.form.reset();
   }
 
-  get emailIsValid() {
-    return (
-      this.form.touched &&
-      this.form.controls.email.invalid &&
-      this.form.controls.email.dirty
-    );
-  }
-
-  get passwordIsValid() {
-    return (
-      this.form.touched &&
-      this.form.get('password')?.invalid &&
-      this.form.get('password')?.dirty
-    );
+  // Helper to check if a control is valid
+  isControlInvalid(controlName: string, groupName: string | null = null): boolean {
+    const control = groupName
+      ? (this.form.get(groupName) as FormGroup)?.get(controlName)
+      : this.form.get(controlName);
+    return control?.touched && control?.invalid && control?.dirty || false;
   }
 
   get passwordsGroup() {
@@ -102,11 +62,7 @@ export class SignupComponent {
   }
 
   get confirmPasswordIsValid() {
-    const confirmPasswordControl = this.passwordsGroup.get('confirmPassword');
     const mismatch = this.passwordsGroup.errors?.['mismatch'];
-    return (
-      confirmPasswordControl?.touched &&
-      (confirmPasswordControl?.invalid || mismatch)
-    );
+    return mismatch && this.passwordsGroup.touched;
   }
 }
